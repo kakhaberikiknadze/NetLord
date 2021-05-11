@@ -1,0 +1,14 @@
+name: Swift
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build
+      run: xcodebuild -scheme NetLord -destination generic/platform=iOS
+    - name: Run tests
+      run: xcodebuild test -scheme NetLord -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11'
