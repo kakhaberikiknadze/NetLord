@@ -103,7 +103,7 @@ extension OAuthManager: Authorizing {
     
     public func authorize() -> AnyPublisher<HTTPHeaders, Error> {
         authorize()
-            .map { ["Authorization": $0.value] }
+            .map { ["Authorization": "Bearer " + $0.value] }
             .mapError { $0 as Error }
             .eraseToAnyPublisher()
     }
