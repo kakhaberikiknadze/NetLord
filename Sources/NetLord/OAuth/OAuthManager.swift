@@ -67,7 +67,9 @@ extension OAuthManager {
     public func refreshTokenIfAvailable() -> AnyPublisher<Token, OAuthError> {
         if let refreshToken = tokenStore.getToken(ofType: .refresh), refreshToken.isValid {
             return getAccessTokenFromRefreshToken(refreshToken)
-                .mapError { _ in OAuthError.tokenRefreshFailed }
+                .mapError { error in
+                    OAuthError.tokenRefreshFailed
+                }
                 .eraseToAnyPublisher()
         } else {
             return Fail(error: OAuthError.refreshTokenNotFound).eraseToAnyPublisher()
