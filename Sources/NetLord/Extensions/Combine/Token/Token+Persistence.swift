@@ -9,9 +9,9 @@ import Combine
 
 internal extension Publisher where Output == Token {
     
-    func storeToken(_ tokenStore: TokenStoring) -> AnyPublisher<Token, Failure> {
-        map { token in
-            tokenStore.storeToken(token)
+    func storeToken(_ tokenStore: TokenStoring) -> AnyPublisher<Token, Error> {
+        tryMap { token in
+            try tokenStore.storeToken(token)
             return token
         }
         .eraseToAnyPublisher()

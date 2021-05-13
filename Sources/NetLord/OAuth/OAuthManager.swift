@@ -65,7 +65,7 @@ extension OAuthManager: TokenRetrieving {
 extension OAuthManager {
     
     public func refreshTokenIfAvailable() -> AnyPublisher<Token, OAuthError> {
-        if let refreshToken = tokenStore.getRefreshToken(), refreshToken.isValid {
+        if let refreshToken = tokenStore.getToken(ofType: .refresh), refreshToken.isValid {
             return getAccessTokenFromRefreshToken(refreshToken)
                 .mapError { _ in OAuthError.tokenRefreshFailed }
                 .eraseToAnyPublisher()
@@ -80,7 +80,7 @@ extension OAuthManager {
 extension OAuthManager {
     
     public func authorize() -> AnyPublisher<Token, OAuthError> {
-        guard let accessToken = tokenStore.getAccessToken(),
+        guard let accessToken = tokenStore.getToken(ofType: .access),
               !shouldRefreshToken(accessToken)
         else {
             return refreshTokenIfAvailable()
@@ -93,7 +93,7 @@ extension OAuthManager {
 extension OAuthManager: Authorizing {
     
     public var isSignedIn: Bool {
-        guard let token = tokenStore.getAccessToken() ?? tokenStore.getRefreshToken() else {
+        guard let token = tokenStore.getToken(ofType: .access) ?? tokenStore.getToken(ofType: .refresh) else {
             return false
         }
         return token.isValid
