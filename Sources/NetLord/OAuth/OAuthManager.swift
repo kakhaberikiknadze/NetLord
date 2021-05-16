@@ -95,10 +95,10 @@ extension OAuthManager {
 extension OAuthManager: Authorizing {
     
     public var isSignedIn: Bool {
-        guard let token = tokenStore.getToken(ofType: .access) ?? tokenStore.getToken(ofType: .refresh) else {
+        guard let refreshToken = tokenStore.getToken(ofType: .refresh) else {
             return false
         }
-        return token.isValid
+        return refreshToken.isValid
     }
     
     public func authorize() -> AnyPublisher<HTTPHeaders, Error> {
