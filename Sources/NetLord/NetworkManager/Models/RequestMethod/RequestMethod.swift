@@ -5,7 +5,7 @@
 //  Created by Kakhi Kiknadze on 08.03.21.
 //
 
-public struct RequestMethod {
+public struct RequestMethod: Equatable {
     
     public let value: String
     

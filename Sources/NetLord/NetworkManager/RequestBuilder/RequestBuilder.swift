@@ -20,12 +20,20 @@ public final class RequestBuilder {
     public init() {}
     
     public func build() -> URLRequest {
+        var httpBody: Data?
         var components = URLComponents()
         components.scheme = scheme
         components.host = host
         components.path = basePath + endpoint.path
-        components.queryItems = endpoint.queryItems
-        
+        if endpoint.method == .get {
+            components.queryItems = endpoint.queryItems
+        } else {
+            do {
+                var components = URLComponents()
+                components.queryItems = endpoint.queryItems
+                httpBody = components.query?.data(using: .utf8)
+            }
+        }
         guard let url = components.url else {
             preconditionFailure("Invalid URL components: \(components)")
         }
@@ -35,11 +43,11 @@ public final class RequestBuilder {
             cachePolicy: cachePolicy,
             timeoutInterval: timeoutInterval
         )
+        request.httpBody = httpBody
         request.httpMethod = endpoint.method.value
         if let headers = additionalHeaders {
             appendHeaders(headers, in: &request)
         }
-        request.httpBody = endpoint.body
         return request
     }
     

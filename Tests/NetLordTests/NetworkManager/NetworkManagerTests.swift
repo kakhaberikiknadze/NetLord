@@ -35,7 +35,6 @@ final class NetworkManagerTests: XCTestCase {
             XCTFail("Expected Authorizer not to fail but it failed")
         } receiveValue: { _ in }
         .store(in: &cancellables)
-
     }
     
 }
