@@ -10,7 +10,7 @@ import Combine
 
 public typealias HTTPHeaders = [String: String]
 
-public final class NetworkManager {
+public final class NetworkManager: NetworkManaging {
     
     private(set) var session: URLSession
     private(set) var decoder: JSONDecoder
