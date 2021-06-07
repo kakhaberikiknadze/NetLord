@@ -5,6 +5,7 @@
 //  Created by Kakhi Kiknadze on 25.05.21.
 //
 
+#if swift(>=5.4)
 import Foundation
 import XCTest
 @testable import NetLord
@@ -169,3 +170,4 @@ final class NetworkRequestBuilderTests: XCTestCase {
     }
     
 }
+#endif
