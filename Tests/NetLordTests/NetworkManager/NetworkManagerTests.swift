@@ -18,7 +18,7 @@ final class NetworkManagerTests: XCTestCase {
         cancellables = []
     }
     
-    func testNetworkRequestSuccess() throws {
+    func testDataTaskSuccess() throws {
         let object = MockObject(foo: "bar")
         let data = try JSONEncoder().encode(object)
         let url = try XCTUnwrap(URL(string: "https://example.com"))
@@ -26,7 +26,7 @@ final class NetworkManagerTests: XCTestCase {
         let manager = NetworkManager(session: session)
         
         let request = URLRequest(url: url)
-        let promise = expectation(description: "Performing network request")
+        let promise = expectation(description: "Performing network request to succeed")
         
         let publisher: AnyPublisher<MockObject, Error> = manager.perform(request: request)
         publisher.sink { result in
@@ -40,6 +40,29 @@ final class NetworkManagerTests: XCTestCase {
         } receiveValue: { result in
             XCTAssertEqual(result, object)
         }
+        .store(in: &cancellables)
+        
+        wait(for: [promise], timeout: 1)
+    }
+    
+    func testDataTaskFailure() throws {
+        let url = try XCTUnwrap(URL(string: "https://example.com"))
+        let session = MockSession(data: nil, response: nil, error: URLError(.unknown))
+        let manager = NetworkManager(session: session)
+        
+        let request = URLRequest(url: url)
+        let promise = expectation(description: "Performing network request to fail")
+        
+        let publisher: AnyPublisher<MockObject, Error> = manager.perform(request: request)
+        publisher.sink { result in
+            switch result {
+            case .finished:
+                XCTFail("Expected to fail network request but it has succeeded")
+            case .failure:
+                promise.fulfill()
+            }
+            
+        } receiveValue: { _ in }
         .store(in: &cancellables)
         
         wait(for: [promise], timeout: 1)
