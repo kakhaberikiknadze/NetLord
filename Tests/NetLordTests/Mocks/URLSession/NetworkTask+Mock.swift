@@ -16,8 +16,22 @@ class MockSession: NetworkTaskProviding {
     var error: URLError?
     var url: URL?
     
-    init(data: Data? = nil, response: URLResponse? = nil, error: URLError? = nil) {
+    init(
+        data: Data? = nil,
+        response: URLResponse? = nil,
+        error: URLError? = nil
+    ) {
         self.data = data
+        self.response = response
+        self.error = error
+    }
+    
+    init(
+        url: URL? = nil,
+        response: URLResponse? = nil,
+        error: URLError? = nil
+    ) {
+        self.url = url
         self.response = response
         self.error = error
     }
