@@ -27,18 +27,14 @@ public class NetworkRequest<Response: Decodable> {
         self.builder = block()
     }
     
-    private func modify(_ block: (inout Self) -> Void) -> Self {
-        var mutableSelf = self
-        block(&mutableSelf)
-        return mutableSelf
-    }
-    
     public func onSuccess(_ block: @escaping (Response) -> Void) -> Self {
-        modify { $0.onSuccess = block }
+        onSuccess = block
+        return self
     }
     
     public func onError(_ block: @escaping (Error) -> Void) -> Self {
-        modify { $0.onError = block }
+        onError = block
+        return self
     }
     
     public func build() -> URLRequest {
