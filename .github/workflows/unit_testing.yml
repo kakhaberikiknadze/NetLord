@@ -8,6 +8,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - uses: fwal/setup-swift@v1
+      with:
+        swift-version: "5.4"
+    - name: Get swift version
+      run: swift --version
     - name: Build
       run: xcodebuild -scheme NetLord -destination generic/platform=iOS
     - name: Run tests
