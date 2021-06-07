@@ -43,7 +43,7 @@ public extension NetworkManager {
         decoder: JSONDecoder,
         retryCount: Int = .zero
     ) -> AnyPublisher<T, Error> {
-        session.dataTaskPublisher(for: request)
+        session.dataTask(for: request)
             .print("Perform Network Request")
             .retry(retryCount)
             .validateNetworkResponse()

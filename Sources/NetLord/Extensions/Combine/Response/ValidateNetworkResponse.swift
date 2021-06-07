@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-internal typealias DataTaskOutput = (data: Data, response: URLResponse)
+public typealias DataTaskOutput = (data: Data, response: URLResponse)
 
 internal extension Publisher where Output == DataTaskOutput {
     

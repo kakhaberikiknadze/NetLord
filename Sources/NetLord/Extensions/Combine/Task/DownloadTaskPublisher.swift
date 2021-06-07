@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-internal typealias DownloadTaskOutput = (url: URL, response: URLResponse)
+public typealias DownloadTaskOutput = (url: URL, response: URLResponse)
 
 internal extension URLSession {
 

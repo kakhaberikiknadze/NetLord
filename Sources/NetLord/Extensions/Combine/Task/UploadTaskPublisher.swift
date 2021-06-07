@@ -6,16 +6,15 @@
 import Foundation
 import Combine
 
-internal typealias UploadTaskOutput = (data: Data?, response: URLResponse)
+public typealias UploadTaskOutput = (data: Data?, response: URLResponse)
 
 internal extension URLSession {
     
     func uploadTaskPublisher(
         for request: URLRequest,
-        session: URLSession,
         with bodyData: Data?
     ) -> URLSession.UploadTaskPublisher {
-        .init(request: request, session: session, bodyData: bodyData)
+        .init(request: request, session: self, bodyData: bodyData)
     }
     
     struct UploadTaskPublisher: Publisher {

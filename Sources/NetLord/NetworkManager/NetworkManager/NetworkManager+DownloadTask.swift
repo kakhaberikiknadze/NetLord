@@ -33,7 +33,7 @@ public extension NetworkManager {
         request: URLRequest,
         retryCount: Int = .zero
     ) -> AnyPublisher<URL, URLError> {
-        return session.downloadTaskPublisher(for: request)
+        return session.downloadTask(for: request)
             .retry(retryCount)
             .map(\.url)
             .receive(on: RunLoop.main)

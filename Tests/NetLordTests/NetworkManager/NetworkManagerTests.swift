@@ -18,4 +18,31 @@ final class NetworkManagerTests: XCTestCase {
         cancellables = []
     }
     
+    func testNetworkRequestSuccess() throws {
+        let object = MockObject(foo: "bar")
+        let data = try JSONEncoder().encode(object)
+        let url = try XCTUnwrap(URL(string: "https://example.com"))
+        let session = MockSession(data: data, response: nil, error: nil)
+        let manager = NetworkManager(session: session)
+        
+        let request = URLRequest(url: url)
+        let promise = expectation(description: "Performing network request")
+        
+        let publisher: AnyPublisher<MockObject, Error> = manager.perform(request: request)
+        publisher.sink { result in
+            switch result {
+            case .finished:
+                promise.fulfill()
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            
+        } receiveValue: { result in
+            XCTAssertEqual(result, object)
+        }
+        .store(in: &cancellables)
+        
+        wait(for: [promise], timeout: 1)
+    }
+    
 }

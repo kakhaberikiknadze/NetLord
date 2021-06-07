@@ -12,14 +12,14 @@ public typealias HTTPHeaders = [String: String]
 
 public final class NetworkManager: NetworkManaging {
     
-    private(set) var session: URLSession
+    private(set) var session: NetworkTaskProviding
     private(set) var decoder: JSONDecoder
     internal let authorizer: Authorizing?
     
     var cancellables = Set<AnyCancellable>()
     
     public init(
-        session: URLSession,
+        session: NetworkTaskProviding,
         authorizer: Authorizing? = nil,
         decoder: JSONDecoder = .init()
     ) {
