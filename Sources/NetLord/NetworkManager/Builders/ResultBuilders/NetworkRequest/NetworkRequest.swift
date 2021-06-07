@@ -47,13 +47,13 @@ public class NetworkRequest<Response: Decodable> {
         return request
     }
     
-    public func perform() -> AnyPublisher<Response, Error> {
+    public func performPublisher() -> AnyPublisher<Response, Error> {
         var request = URLRequest(url: URL(string: "https://")!)
         builder.buildRequest(&request)
         return manager.perform(request: request)
     }
     
-    public func perform2() {
+    public func perform() {
         var request = URLRequest(url: URL(string: "https://")!)
         builder.buildRequest(&request)
         let cancellable: AnyPublisher<Response, Error> = manager.perform(request: request)

@@ -136,20 +136,17 @@ final class NetworkRequestBuilderTests: XCTestCase {
     func testNetworkRequestSuccess() {
         let promise = expectation(description: "Getting mock object")
         let manager = NetworkManagerMock()
-        let request = NetworkRequest<MockObject>(manager: manager) {
+        NetworkRequest<MockObject>(manager: manager) {
             Scheme("https")
             Host("example.com")
         }
-        .build()
-        let publisher: AnyPublisher<MockObject, Error> = manager.perform(request: request)
-        publisher
-            .sink { result in
-                guard case .failure = result else { return }
-                XCTFail("Expected to succeed network request but it failed")
-            } receiveValue: { value in
-                promise.fulfill()
-            }
-            .store(in: &cancellables)
+        .onSuccess { _ in
+            promise.fulfill()
+        }
+        .onError { _ in
+            XCTFail("Expected to succeed network request but it failed")
+        }
+        .perform()
         wait(for: [promise], timeout: 1)
     }
     
@@ -157,24 +154,17 @@ final class NetworkRequestBuilderTests: XCTestCase {
         let promise = expectation(description: "Getting failure")
         let manager = NetworkManagerMock()
         manager.fails = true
-        let request = NetworkRequest<MockObject>(manager: manager) {
+        NetworkRequest<MockObject>(manager: manager) {
             Scheme("https")
             Host("example.com")
         }
-        .build()
-        let publisher: AnyPublisher<MockObject, Error> = manager.perform(request: request)
-        publisher
-            .sink { result in
-                switch result {
-                case .finished:
-                    XCTFail("Expected to fail network request but it succeeded")
-                case .failure:
-                    promise.fulfill()
-                }
-            } receiveValue: { value in
-                XCTFail("Expected to fail network request but it succeeded")
-            }
-            .store(in: &cancellables)
+        .onSuccess { _ in
+            XCTFail("Expected to fail network request but it succeeded")
+        }
+        .onError { _ in
+            promise.fulfill()
+        }
+        .perform()
         wait(for: [promise], timeout: 1)
     }
     
