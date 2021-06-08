@@ -75,3 +75,5 @@ let request = RequestBuilder()
 return manager.perform(request: request)
 ```
 
+## More
+For more documentation please refer to [NetLord wiki page](https://github.com/kakhaberikiknadze/NetLord/wiki)
