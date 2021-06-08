@@ -28,7 +28,7 @@ public final class NetworkManager: NetworkManaging {
         self.decoder = decoder
     }
     
-    public func changeSession(with newSession: URLSession) {
+    public func changeSession(with newSession: NetworkTaskProviding) {
         session = newSession
     }
     
