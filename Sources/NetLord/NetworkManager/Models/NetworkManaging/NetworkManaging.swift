@@ -22,6 +22,13 @@ public protocol NetworkManaging: AnyObject {
         retryCount: Int,
         needsAuthorization: Bool
     ) -> AnyPublisher<URL, URLError>
+    
+    func upload<R: Decodable>(
+        request: URLRequest,
+        bodyData: Data?,
+        retryCount: Int,
+        needsAuthorization: Bool
+    ) -> AnyPublisher<R, Error>
 }
 
 public extension NetworkManaging {
@@ -49,5 +56,15 @@ public extension NetworkManaging {
     
     func download(request: URLRequest, retryCount: Int) -> AnyPublisher<URL, URLError> {
         download(request: request, retryCount: retryCount, needsAuthorization: true)
+    }
+}
+
+public extension NetworkManaging {
+    func upload<R: Decodable>(request: URLRequest, bodyData: Data?, needsAuthorization: Bool) -> AnyPublisher<R, Error> {
+        upload(request: request, bodyData: bodyData, retryCount: .zero, needsAuthorization: needsAuthorization)
+    }
+    
+    func upload<R: Decodable>(request: URLRequest, bodyData: Data?, retryCount: Int) -> AnyPublisher<R, Error> {
+        upload(request: request, bodyData: bodyData, retryCount: retryCount, needsAuthorization: true)
     }
 }

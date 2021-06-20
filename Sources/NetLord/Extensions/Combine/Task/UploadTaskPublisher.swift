@@ -6,7 +6,7 @@
 import Foundation
 import Combine
 
-public typealias UploadTaskOutput = (data: Data?, response: URLResponse)
+public typealias UploadTaskOutput = (data: Data, response: URLResponse)
 
 internal extension URLSession {
     
@@ -69,7 +69,8 @@ internal extension URLSession {
                 if let error = error {
                     self?.subscriber?.receive(completion: .failure(error))
                 }
-                guard let response = response else {
+                guard let response = response,
+                      let data = data else {
                     self?.subscriber?.receive(completion: .failure(URLError(.badServerResponse)))
                     return
                 }
