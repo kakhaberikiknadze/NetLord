@@ -10,11 +10,15 @@ import Combine
 
 public typealias HTTPHeaders = [String: String]
 
-public final class NetworkManager: NetworkManaging {
+public final class NetworkManager {
     
     private(set) var session: NetworkTaskProviding
     private(set) var decoder: JSONDecoder
     internal let authorizer: Authorizing?
+    
+    #if swift(>=5.4)
+    internal var builtRequest: URLRequest?
+    #endif
     
     var cancellables = Set<AnyCancellable>()
     
