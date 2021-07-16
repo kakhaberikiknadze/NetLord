@@ -2,21 +2,26 @@
 
 **NetLord** is a swift package specifically for Networking purposes.
 
+## Architecture
+
+<img width="1299" alt="Screenshot 2021-07-16 at 15 28 19" src="https://user-images.githubusercontent.com/79094816/125940838-f9dc6473-3d0f-4995-88d3-8b0ad0c209a1.png">
+
+
 ### General flow of API call
 
 ![](./Docs/NetworkingFlowDiagram.png)
 
 ### Network Manager
 
-`NetworkManager` is responsible for performing provided request. In case it needs an authorization and `NetworkManager` itself has `authorizer`, network manager triggers `authorizer`'s `authorize()` method and only after that it calls actual `perform` method with an authorized request. Same thing applies on `dataTask` and `downloadTask`. 
+`NetworkManager` is responsible for performing provided request. In case it needs an authorization and has an `authorizer`, network manager triggers `authorizer`'s `authorize()` method and only after that it calls actual `perform` method with an authorized request. Same thing applies on `dataTask` and `downloadTask`. 
 
 > Currently `NetworkManager` doesn't contain an `uploadTask`.
 
-You can initialize `NetworkManager` with `URLSession` (**Required**), authorizer(*Optional*) and `decoder`(*Optional*).
+You can initialize `NetworkManager` with `NetworkTaskProviding` abstraction (**Required**) e.g. `URLSession`, authorizer(*Optional*) and `decoder`(*Optional*).
 
 ```swift
 let session = URLSession(configuration: .default)
-let authorizer = OAuthManager(service: MyAuthService(), tokenStore: MyTokenStore())
+let authorizer = NetworkRequestAuthorizer(tokenStore: MyTokenStore(), configuration: .default, tokenRefresher: MyTokenRefresher())
 let manager = NetworkManager(session: session, authorizer: authorizer, decoder: JSONDecoder())
 ```
 
@@ -31,23 +36,29 @@ public protocol Authorizing: AnyObject {
 }
 ```
 
-> You can use `OAuthManager` for authorizer or implement your own one.
+> You can use `NetworkRequestAuthorizer` for authorizer or implement your own one.
 
-### OAuthManager
+### NetworkRequestAuthorizer
 
-`OAuthManager` is a wrapper of `OAuthService` (composition of two protocols `TokenRetrieving` and `SignInRequestProvider`. First one is used to get token data from code or to refresh an access token and latter one to get a `URLRequest` of authentication for webview.).
+`NetowrkRequestAuthorizer` is an implementation of `Authorizing` and is responsible for authorizing network request. It needs to have a token store from where it fetches an access token. If token's not found or expired then authorizer tries to fetch a refresh token from which it would ask token refresher to refresh the token. In case refresh token is also not found or outdated then it throws an error.
 
-You can initialize it with `OAuthService`, `TokenStoring` (abstraction used for handling token persistence) and `Configuration`.
+You can initialize it with `TokenStoring` (abstraction used for handling token persistence), `Configuration` and `TokenRefreshHandler` block or it has another initializer with `TokenStoring`, `Configuration` and `TokenRefreshing`.
 
 ```swift
-let oAuthManager = OAuthManager(service: MyAuthService(), tokenStore: MyTokenStore())
-```
+let authorizer = NetworkRequestAuthorizer(tokenStore: MyTokenStore(), configuration: .default, tokenRefresher: MyTokenRefresher())
 
-Also, `OAuthManager` itself conforms to `Authorizing` protocol and handles all the authorization logic.
+// OR
+
+let authorizer = NetworkRequestAuthorizer(
+    tokenStore: MyTokenStore(),
+    configuration: .default,
+    tokenRefreshBlock: myRefreshBlock
+)
+```
 
 ### TokenStoring
 
-`TokenStoring` is a protocol containing methods for storing, getting and removing tokens in a persistence store. (e.g. Keychain) and is used by `OAuthManager`.
+`TokenStoring` is a protocol containing methods for storing, getting and removing tokens in a persistence store. (e.g. Keychain).
 
 ### Endpoint
 
@@ -61,7 +72,7 @@ Also, `OAuthManager` itself conforms to `Authorizing` protocol and handles all t
 
 ```Swift
 let session = URLSession(configuration: .default)
-let authorizer = OAuthManager(service: MyAuthService(), tokenStore: MyTokenStore())
+let authorizer = NetworkRequestAuthorizer(tokenStore: MyTokenStore(), tokenRefresher: MyTokenRefresher())
 let manager = NetworkManager(session: session, authorizer: authorizer, decoder: JSONDecoder())
 
 let queries: [URLQueryItem] = [.init(name: "foo", value: "bar")]
@@ -73,6 +84,23 @@ let request = RequestBuilder()
             .setEndpooint(endpoint)
             .build()
 return manager.perform(request: request)
+```
+Or you can also use `NetworkManager`'s function builder approach for building request and performing it this way:
+
+```Swift
+manager.makeRequest {
+            Scheme("https")
+            Host("example.com")
+            URLPath("my/path")
+            // And more ...
+        }
+        .dataTaskPublisher(responseType: Dummy.self)
+        .sink { result in
+            // Handle result here
+        } receiveValue: { value in
+            // Handle output here
+        }
+        .store(in: &cancellables)
 ```
 
 ## More
