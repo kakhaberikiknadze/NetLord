@@ -88,7 +88,7 @@ extension NetworkManagerTests {
     func testHttpBody() {
         let session = MockSession(data: nil, response: nil, error: nil)
         let manager = NetworkManager(session: session)
-        let body: Data? = try? JSONEncoder().encode(MockObject())
+        let body: Data? = try? JSONEncoder().encode(Dummy.stubbed)
         manager.makeRequest {
             Scheme("https")
             Host("example.com")
@@ -137,7 +137,7 @@ extension NetworkManagerTests {
 
     func testNetworkRequestSuccess() throws {
         let promise = expectation(description: "Getting mock object")
-        let object = MockObject(foo: "bar")
+        let object = Dummy.stubbed
         let data = try JSONEncoder().encode(object)
         let session = MockSession(data: data, response: nil, error: nil)
         let manager = NetworkManager(session: session)
@@ -146,7 +146,7 @@ extension NetworkManagerTests {
             Scheme("https")
             Host("example.com")
         }
-        .dataTaskPublisher(responseType: MockObject.self)
+        .dataTaskPublisher(responseType: Dummy.self)
         .sink { result in
             switch result {
             case .finished:
@@ -171,7 +171,7 @@ extension NetworkManagerTests {
             Scheme("https")
             Host("example.com")
         }
-        .dataTaskPublisher(responseType: MockObject.self)
+        .dataTaskPublisher(responseType: Dummy.self)
         .sink { result in
             switch result {
             case .finished:

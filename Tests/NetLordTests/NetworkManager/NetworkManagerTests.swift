@@ -19,7 +19,7 @@ final class NetworkManagerTests: XCTestCase {
     }
     
     func testDataTaskSuccess() throws {
-        let object = MockObject(foo: "bar")
+        let object = Dummy.stubbed
         let data = try JSONEncoder().encode(object)
         let url = try XCTUnwrap(URL(string: "https://example.com"))
         let session = MockSession(data: data, response: nil, error: nil)
@@ -27,7 +27,7 @@ final class NetworkManagerTests: XCTestCase {
         let request = URLRequest(url: url)
         let promise = expectation(description: "Performing network request to succeed")
         
-        let publisher: AnyPublisher<MockObject, Error> = manager.perform(request: request)
+        let publisher: AnyPublisher<Dummy, Error> = manager.perform(request: request)
         publisher.sink { result in
             switch result {
             case .finished:
@@ -51,7 +51,7 @@ final class NetworkManagerTests: XCTestCase {
         let request = URLRequest(url: url)
         let promise = expectation(description: "Performing network request to fail")
         
-        let publisher: AnyPublisher<MockObject, Error> = manager.perform(request: request)
+        let publisher: AnyPublisher<Dummy, Error> = manager.perform(request: request)
         publisher.sink { result in
             switch result {
             case .finished:
