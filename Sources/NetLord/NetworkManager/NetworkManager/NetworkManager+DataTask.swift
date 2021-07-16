@@ -25,11 +25,13 @@ public extension NetworkManager {
                     authorizationHeaders.forEach {
                         newRequest.setValue($0.value, forHTTPHeaderField: $0.key)
                     }
-                    return self?.perform(request: newRequest,
-                                         responseType: responseType,
-                                         decoder: decoder,
-                                         retryCount: retryCount)
-                        ?? PassthroughSubject<T, Error>().eraseToAnyPublisher()
+                    return self?.perform(
+                        request: newRequest,
+                        responseType: responseType,
+                        decoder: decoder,
+                        retryCount: retryCount
+                    )
+                    ?? PassthroughSubject<T, Error>().eraseToAnyPublisher()
                 }
                 .eraseToAnyPublisher()
         } else {

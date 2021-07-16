@@ -6,7 +6,10 @@
 //
 
 public protocol TokenStoring {
-    func storeToken(_ token: Token) throws
-    func getToken(ofType tokenType: TokenType) -> Token?
-    func removeToken(ofType tokenType: TokenType) throws
+    func storeAccessToken(_ token: Tokenable) throws
+    func storeRefreshToken(_ token: Tokenable) throws
+    func getAccessToken() -> Tokenable?
+    func getRefreshToken() -> Tokenable?
+    func removeAccessToken() throws
+    func removeRefreshToken() throws
 }

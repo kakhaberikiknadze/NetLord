@@ -7,11 +7,19 @@
 
 import Combine
 
-internal extension Publisher where Output == Token {
+internal extension Publisher where Output == Tokenable {
     
-    func storeToken(_ tokenStore: TokenStoring) -> AnyPublisher<Token, Error> {
+    func storeAccessToken(_ tokenStore: TokenStoring) -> AnyPublisher<Tokenable, Error> {
         tryMap { token in
-            try tokenStore.storeToken(token)
+            try tokenStore.storeAccessToken(token)
+            return token
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    func storeRefreshToken(_ tokenStore: TokenStoring) -> AnyPublisher<Tokenable, Error> {
+        tryMap { token in
+            try tokenStore.storeRefreshToken(token)
             return token
         }
         .eraseToAnyPublisher()

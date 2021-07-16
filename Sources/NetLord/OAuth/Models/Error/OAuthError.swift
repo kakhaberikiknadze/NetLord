@@ -13,5 +13,6 @@ public enum OAuthError: Error {
     case refreshTokenExpired
     case accessTokenNotFound
     case accessTokenExpired
-    case tokenRefreshFailed
+    case tokenRefreshFailed(_ underlyingError: Error?)
+    case tokenRefresherNotFound
 }
