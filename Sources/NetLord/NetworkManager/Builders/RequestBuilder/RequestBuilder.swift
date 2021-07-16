@@ -44,7 +44,7 @@ public final class RequestBuilder {
             timeoutInterval: timeoutInterval
         )
         request.httpBody = httpBody
-        request.httpMethod = endpoint.method.value
+        request.httpMethod = endpoint.method.rawValue
         if let headers = additionalHeaders {
             appendHeaders(headers, in: &request)
         }

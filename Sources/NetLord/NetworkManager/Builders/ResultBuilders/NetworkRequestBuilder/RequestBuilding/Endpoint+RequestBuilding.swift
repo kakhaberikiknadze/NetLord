@@ -31,7 +31,7 @@ extension Endpoint: RequestBuilding {
             preconditionFailure("Invalid URL components: \(components)")
         }
         request.url = url
-        request.httpMethod = method.value
+        request.httpMethod = method.rawValue
     }
     
 }

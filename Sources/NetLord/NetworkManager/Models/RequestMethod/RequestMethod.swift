@@ -5,18 +5,22 @@
 //  Created by Kakhi Kiknadze on 08.03.21.
 //
 
-public struct RequestMethod: Equatable {
+public struct RequestMethod: Equatable, RawRepresentable {
     
-    public let value: String
+    public let rawValue: String
+    
+    public init(rawValue: String) {
+        self.rawValue = rawValue
+    }
     
 }
 
 public extension RequestMethod {
     
-    static var get: Self { .init(value: "GET") }
-    static var post: Self { .init(value: "POST") }
-    static var delete: Self { .init(value: "DELETE") }
-    static var put: Self { .init(value: "PUT") }
-    static var patch: Self { .init(value: "PATCH") }
+    static var get: Self { .init(rawValue: "GET") }
+    static var post: Self { .init(rawValue: "POST") }
+    static var delete: Self { .init(rawValue: "DELETE") }
+    static var put: Self { .init(rawValue: "PUT") }
+    static var patch: Self { .init(rawValue: "PATCH") }
     
 }

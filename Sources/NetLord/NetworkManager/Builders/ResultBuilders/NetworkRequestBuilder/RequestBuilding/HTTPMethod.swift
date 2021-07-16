@@ -17,7 +17,7 @@ public struct HTTPMethod: RequestBuilding {
     }
     
     public init(_ method: RequestMethod) {
-        self.method = method.value
+        self.method = method.rawValue
     }
     
     public func buildRequest(_ request: inout URLRequest) {
