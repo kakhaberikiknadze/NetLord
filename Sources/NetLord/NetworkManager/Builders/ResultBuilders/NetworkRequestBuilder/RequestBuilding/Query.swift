@@ -9,7 +9,6 @@
 import Foundation
 
 public struct Query: RequestBuilding {
-    
     private let queryItems: [URLQueryItem]
     
     public init(_ parameters: [String: String]) {
@@ -32,7 +31,6 @@ public struct Query: RequestBuilding {
             preconditionFailure("Invalid URL components: \(components)")
         }
         request.url = url
-    }
-    
+    }    
 }
 #endif

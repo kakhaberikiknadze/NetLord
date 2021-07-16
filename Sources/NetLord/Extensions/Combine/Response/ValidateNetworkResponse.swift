@@ -11,7 +11,6 @@ import Combine
 public typealias DataTaskOutput = (data: Data, response: URLResponse)
 
 internal extension Publisher where Output == DataTaskOutput {
-    
     func validateNetworkResponse() -> AnyPublisher<Data, Error> {
         tryMap({ data, resposne in
             guard let httpResponse = resposne as? HTTPURLResponse else { return data }
@@ -22,5 +21,4 @@ internal extension Publisher where Output == DataTaskOutput {
         })
         .eraseToAnyPublisher()
     }
-    
 }

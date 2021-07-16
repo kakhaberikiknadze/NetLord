@@ -11,7 +11,6 @@ import Combine
 public typealias HTTPHeaders = [String: String]
 
 public final class NetworkManager {
-    
     private(set) var session: NetworkTaskProviding
     private(set) var decoder: JSONDecoder
     internal let authorizer: Authorizing?
@@ -35,5 +34,4 @@ public final class NetworkManager {
     public func changeSession(with newSession: NetworkTaskProviding) {
         session = newSession
     }
-    
 }

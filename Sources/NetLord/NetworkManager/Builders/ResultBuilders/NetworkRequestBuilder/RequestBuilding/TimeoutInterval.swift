@@ -9,7 +9,6 @@
 import Foundation
 
 public struct TimeoutInterval: RequestBuilding {
-    
     private let interval: TimeInterval
     
     public init(_ interval: TimeInterval) {
@@ -19,6 +18,5 @@ public struct TimeoutInterval: RequestBuilding {
     public func buildRequest(_ request: inout URLRequest) {
         request.timeoutInterval = interval
     }
-    
 }
 #endif

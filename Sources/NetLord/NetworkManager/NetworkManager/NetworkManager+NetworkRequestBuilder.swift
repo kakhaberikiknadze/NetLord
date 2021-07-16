@@ -10,7 +10,6 @@ import Foundation
 import Combine
 
 extension NetworkManager {
-    
     @discardableResult public func makeRequest(
         @NetworkRequestBuilder _ requestBlock: () -> RequestBuilding
     ) -> Self {
@@ -55,6 +54,5 @@ extension NetworkManager {
         )
         .eraseToAnyPublisher()
     }
-    
 }
 #endif

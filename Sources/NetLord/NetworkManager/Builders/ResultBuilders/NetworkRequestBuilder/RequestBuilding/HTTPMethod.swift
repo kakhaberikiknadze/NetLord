@@ -9,7 +9,6 @@
 import Foundation
 
 public struct HTTPMethod: RequestBuilding {
-    
     private let method: String
     
     public init(_ method: String) {
@@ -23,6 +22,5 @@ public struct HTTPMethod: RequestBuilding {
     public func buildRequest(_ request: inout URLRequest) {
         request.httpMethod = method
     }
-    
 }
 #endif

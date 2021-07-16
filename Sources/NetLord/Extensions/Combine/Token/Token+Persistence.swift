@@ -8,7 +8,6 @@
 import Combine
 
 internal extension Publisher where Output == Tokenable {
-    
     func storeAccessToken(_ tokenStore: TokenStoring) -> AnyPublisher<Tokenable, Error> {
         tryMap { token in
             try tokenStore.storeAccessToken(token)
@@ -24,5 +23,4 @@ internal extension Publisher where Output == Tokenable {
         }
         .eraseToAnyPublisher()
     }
-    
 }

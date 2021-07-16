@@ -9,7 +9,6 @@
 import Foundation
 
 public struct Headers: RequestBuilding {
-    
     private let headers: HTTPHeaders
     private let shouldAppend: Bool
     
@@ -31,6 +30,5 @@ public struct Headers: RequestBuilding {
             request.addValue(value, forHTTPHeaderField: key)
         }
     }
-    
 }
 #endif

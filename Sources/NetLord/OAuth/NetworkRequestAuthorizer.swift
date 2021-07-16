@@ -13,7 +13,6 @@ public protocol TokenRefreshing {
 }
 
 public final class NetworkRequestAuthorizer {
-    
     public typealias TokenRefreshHandler = (String) -> AnyPublisher<Tokenable, Error>
     
     internal let tokenStore: TokenStoring
@@ -42,25 +41,19 @@ public final class NetworkRequestAuthorizer {
         self.tokenRefresher = tokenRefresher
         tokenRefreshBlock = nil
     }
-    
 }
 
 public extension NetworkRequestAuthorizer {
-    
     func shouldRefreshToken(_ accessToken: Tokenable) -> Bool {
         guard let expirationDate = accessToken.expireDate else {
             return false
         }
         return Date().addingTimeInterval(configuration.tokenRefreshTimeInterval) >= expirationDate
     }
-    
 }
-
-#warning("Store refresh token")
 
 // MARK: - Refresh Token
 extension NetworkRequestAuthorizer {
-    
     private func refreshTokenIfAvailable() -> AnyPublisher<Tokenable, OAuthError> {
         if let refreshToken = tokenStore.getRefreshToken(), refreshToken.isValid {
             return refreshAccessToken(with: refreshToken.value)
@@ -81,12 +74,10 @@ extension NetworkRequestAuthorizer {
             return Fail(error: OAuthError.tokenRefresherNotFound).eraseToAnyPublisher()
         }
     }
-    
 }
 
 // MARK: - Authorize
 extension NetworkRequestAuthorizer {
-    
     public func authorize() -> AnyPublisher<Tokenable, OAuthError> {
         guard let accessToken = tokenStore.getAccessToken(),
               !shouldRefreshToken(accessToken)
@@ -95,11 +86,9 @@ extension NetworkRequestAuthorizer {
         }
         return CurrentValueSubject<Tokenable, OAuthError>(accessToken).eraseToAnyPublisher()
     }
-    
 }
 
 extension NetworkRequestAuthorizer: Authorizing {
-    
     public var isSignedIn: Bool {
         guard let refreshToken = tokenStore.getRefreshToken() else {
             return false
@@ -113,5 +102,4 @@ extension NetworkRequestAuthorizer: Authorizing {
             .mapError { $0 as Error }
             .eraseToAnyPublisher()
     }
-    
 }

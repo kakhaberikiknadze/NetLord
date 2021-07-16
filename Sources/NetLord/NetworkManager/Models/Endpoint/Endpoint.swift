@@ -8,7 +8,6 @@
 import Foundation
 
 public struct Endpoint {
-    
     public let method: RequestMethod
     public let path: String
     public let queryItems: [URLQueryItem]?
@@ -22,5 +21,4 @@ public struct Endpoint {
         self.queryItems = queryItems
         self.method = method
     }
-    
 }

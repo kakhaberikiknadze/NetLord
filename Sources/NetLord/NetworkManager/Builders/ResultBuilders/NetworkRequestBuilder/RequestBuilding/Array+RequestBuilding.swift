@@ -9,10 +9,8 @@
 import Foundation
 
 extension Array: RequestBuilding where Element == RequestBuilding {
-    
     public func buildRequest(_ request: inout URLRequest) {
         forEach { $0.buildRequest(&request) }
     }
-    
 }
 #endif

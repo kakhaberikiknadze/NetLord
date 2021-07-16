@@ -9,7 +9,6 @@
 import Foundation
 
 extension Endpoint: RequestBuilding {
-    
     public func buildRequest(_ request: inout URLRequest) {
         guard
             let url = request.url,
@@ -33,6 +32,5 @@ extension Endpoint: RequestBuilding {
         request.url = url
         request.httpMethod = method.rawValue
     }
-    
 }
 #endif

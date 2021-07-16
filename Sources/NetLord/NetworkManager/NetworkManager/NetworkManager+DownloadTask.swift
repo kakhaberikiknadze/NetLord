@@ -7,7 +7,6 @@ import Foundation
 import Combine
 
 public extension NetworkManager {
-    
     func download(
         request: URLRequest,
         retryCount: Int = .zero,
@@ -39,5 +38,4 @@ public extension NetworkManager {
             .receive(on: RunLoop.main)
             .eraseToAnyPublisher()
     }
-
 }

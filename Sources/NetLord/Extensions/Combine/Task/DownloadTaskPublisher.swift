@@ -11,7 +11,6 @@ import Combine
 public typealias DownloadTaskOutput = (url: URL, response: URLResponse)
 
 internal extension URLSession {
-
     func downloadTaskPublisher(for url: URL) -> URLSession.DownloadTaskPublisher {
         self.downloadTaskPublisher(for: .init(url: url))
     }
@@ -43,7 +42,6 @@ internal extension URLSession {
 }
 
 internal extension URLSession {
-
     final class DownloadTaskSubscription<S: Subscriber>: Subscription where
         S.Input == DownloadTaskOutput,
         S.Failure == URLError
@@ -98,7 +96,6 @@ internal extension URLSession {
 }
 
 internal final class DownloadTaskSubscriber: Subscriber {
-    
     internal typealias Input = DownloadTaskOutput
     internal typealias Failure = URLError
 
@@ -119,5 +116,4 @@ internal final class DownloadTaskSubscriber: Subscriber {
         self.subscription?.cancel()
         self.subscription = nil
     }
-    
 }

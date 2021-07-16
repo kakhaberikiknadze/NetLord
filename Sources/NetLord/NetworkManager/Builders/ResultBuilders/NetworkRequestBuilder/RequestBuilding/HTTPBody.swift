@@ -9,7 +9,6 @@
 import Foundation
 
 public struct HTTPBody: RequestBuilding {
-    
     private let data: Data?
     
     public init(_ data: Data?) {
@@ -43,6 +42,5 @@ public struct HTTPBody: RequestBuilding {
     public func buildRequest(_ request: inout URLRequest) {
         request.httpBody = data
     }
-    
 }
 #endif

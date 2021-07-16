@@ -10,7 +10,6 @@ import Foundation
 
 @resultBuilder
 public struct NetworkRequestBuilder {
-    
     static func buildBlock(_ components: RequestBuilding...) -> RequestBuilding {
         components
     }
@@ -30,6 +29,5 @@ public struct NetworkRequestBuilder {
     public static func buildEither(second: RequestBuilding) -> RequestBuilding {
         second
     }
-    
 }
 #endif

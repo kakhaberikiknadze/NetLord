@@ -11,11 +11,9 @@ import Foundation
 public typealias CachePolicy = URLRequest.CachePolicy
 
 extension URLRequest.CachePolicy: RequestBuilding {
-    
     public func buildRequest(_ request: inout URLRequest) {
         request.cachePolicy = self
     }
-    
 }
 
 #endif

@@ -8,7 +8,6 @@
 import Foundation
 
 public final class RequestBuilder {
-    
     private var scheme: String = ""
     private var host: String = ""
     private var basePath: String = ""
@@ -56,11 +55,9 @@ public final class RequestBuilder {
             request.addValue(value, forHTTPHeaderField: key)
         }
     }
-    
 }
 
 public extension RequestBuilder {
-    
     func setScheme(_ scheme: String) -> Self {
         self.scheme = scheme
         return self
@@ -85,5 +82,4 @@ public extension RequestBuilder {
         self.additionalHeaders = headers
         return self
     }
-    
 }

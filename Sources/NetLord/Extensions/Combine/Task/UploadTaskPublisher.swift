@@ -9,7 +9,6 @@ import Combine
 public typealias UploadTaskOutput = (data: Data?, response: URLResponse)
 
 internal extension URLSession {
-    
     func uploadTaskPublisher(
         for request: URLRequest,
         with bodyData: Data?
@@ -18,7 +17,6 @@ internal extension URLSession {
     }
     
     struct UploadTaskPublisher: Publisher {
-        
         internal typealias Output = UploadTaskOutput
         internal typealias Failure = Error
         
@@ -39,17 +37,12 @@ internal extension URLSession {
                                                       bodyData: bodyData)
             subscriber.receive(subscription: subscription)
         }
-        
     }
-    
 }
 
 internal extension URLSession {
-    
-    final class UploadTaskSubscription<S: Subscriber>: Subscription where
-        S.Input == UploadTaskOutput,
-        S.Failure == Error
-    {
+    final class UploadTaskSubscription<S: Subscriber>: Subscription
+    where S.Input == UploadTaskOutput, S.Failure == Error {
         private let subscriber: S?
         private weak var session: URLSession?
         private let request: URLRequest
@@ -83,11 +76,9 @@ internal extension URLSession {
             task?.cancel()
         }
     }
-    
 }
 
 internal final class UploadTaskSubscriber: Subscriber {
-    
     internal typealias Input = UploadTaskOutput
     internal typealias Failure = Error
     
@@ -108,5 +99,4 @@ internal final class UploadTaskSubscriber: Subscriber {
         self.subscription?.cancel()
         self.subscription = nil
     }
-    
 }

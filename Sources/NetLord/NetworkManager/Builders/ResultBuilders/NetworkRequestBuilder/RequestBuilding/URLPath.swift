@@ -9,7 +9,6 @@
 import Foundation
 
 public struct URLPath: RequestBuilding {
-    
     private let value: String
     
     public init(_ value: String) {
@@ -29,6 +28,5 @@ public struct URLPath: RequestBuilding {
         }
         request.url = url
     }
-    
 }
 #endif
