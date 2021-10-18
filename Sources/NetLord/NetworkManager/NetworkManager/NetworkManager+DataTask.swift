@@ -19,14 +19,10 @@ public extension NetworkManager {
     ) -> AnyPublisher<T, Error> {
         let decoder = decoder ?? self.decoder
         if needsAuthorization, let authorizer = authorizer {
-            return authorizer.authorize()
-                .flatMap { [weak self] authorizationHeaders -> AnyPublisher<T, Error> in
-                    var newRequest = request
-                    authorizationHeaders.forEach {
-                        newRequest.setValue($0.value, forHTTPHeaderField: $0.key)
-                    }
-                    return self?.perform(
-                        request: newRequest,
+            return authorizer.authorize(request)
+                .flatMap { [weak self] authorizedRequest in
+                    self?.perform(
+                        request: authorizedRequest,
                         responseType: responseType,
                         decoder: decoder,
                         retryCount: retryCount

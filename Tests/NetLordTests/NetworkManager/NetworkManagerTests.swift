@@ -44,10 +44,62 @@ final class NetworkManagerTests: XCTestCase {
         wait(for: [promise], timeout: 1)
     }
     
+    func testAuthorizedDataTask_Success() throws {
+        let object = Dummy.stubbed
+        let data = try JSONEncoder().encode(object)
+        let url = try XCTUnwrap(URL(string: "https://example.com"))
+        let session = MockSession(data: data, response: nil, error: nil)
+        let authorizer = MockAuthorizer(tokenValue: "ACCESS_TOKEN", fails: false)
+        let manager = NetworkManager(session: session, authorizer: authorizer)
+        let request = URLRequest(url: url)
+        let promise = expectation(description: "Performing network request to succeed")
+        
+        let publisher: AnyPublisher<Dummy, Error> = manager.perform(request: request, needsAuthorization: true)
+        publisher.sink { result in
+            switch result {
+            case .finished:
+                promise.fulfill()
+            case .failure(let error):
+                XCTFail(error.localizedDescription)
+            }
+            
+        } receiveValue: { result in
+            XCTAssertEqual(result, object)
+        }
+        .store(in: &cancellables)
+        
+        wait(for: [promise], timeout: 1)
+    }
+    
     func testDataTask_Failure() throws {
         let url = try XCTUnwrap(URL(string: "https://example.com"))
         let session = MockSession(data: nil, response: nil, error: URLError(.unknown))
         let manager = NetworkManager(session: session)
+        let request = URLRequest(url: url)
+        let promise = expectation(description: "Performing network request to fail")
+        
+        let publisher: AnyPublisher<Dummy, Error> = manager.perform(request: request)
+        publisher.sink { result in
+            switch result {
+            case .finished:
+                XCTFail("Expected to fail network request but it has succeeded")
+            case .failure:
+                promise.fulfill()
+            }
+            
+        } receiveValue: { _ in }
+        .store(in: &cancellables)
+        
+        wait(for: [promise], timeout: 1)
+    }
+    
+    func testAuthorizedDataTask_Failure() throws {
+        let url = try XCTUnwrap(URL(string: "https://example.com"))
+        let object = Dummy.stubbed
+        let data = try JSONEncoder().encode(object)
+        let session = MockSession(data: data, response: nil, error: nil)
+        let authorizer = MockAuthorizer(tokenValue: "ACCESS_TOKEN", fails: true)
+        let manager = NetworkManager(session: session, authorizer: authorizer)
         let request = URLRequest(url: url)
         let promise = expectation(description: "Performing network request to fail")
         

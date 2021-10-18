@@ -13,14 +13,14 @@ public extension NetworkManager {
         needsAuthorization: Bool = true
     ) -> AnyPublisher<URL, URLError> {
         if needsAuthorization, let authorizer = authorizer {
-            return authorizer.authorize()
+            return authorizer.authorize(request)
                 .mapError { _ in URLError(.userAuthenticationRequired )}
-                .flatMap { [weak self] authorizationHeaders -> AnyPublisher<URL, URLError> in
-                    var newRequest = request
-                    authorizationHeaders.forEach {
-                        newRequest.setValue($0.value, forHTTPHeaderField: $0.key)
-                    }
-                    return self?.download(request: newRequest, retryCount: retryCount) ?? PassthroughSubject<URL, URLError>().eraseToAnyPublisher()
+                .flatMap { [weak self] authorizedRequest -> AnyPublisher<URL, URLError> in
+                    return self?.download(
+                        request: authorizedRequest,
+                        retryCount: retryCount
+                    )
+                    ?? PassthroughSubject<URL, URLError>().eraseToAnyPublisher()
                 }
                 .eraseToAnyPublisher()
         } else {

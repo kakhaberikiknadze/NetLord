@@ -43,18 +43,27 @@ public final class NetworkRequestAuthorizer {
     }
 }
 
-public extension NetworkRequestAuthorizer {
+// MARK: - Refresh Token
+// TODO: - Add tests for NetworkRequestAuthorizer
+
+private extension NetworkRequestAuthorizer {
     func shouldRefreshToken(_ accessToken: Tokenable) -> Bool {
         guard let expirationDate = accessToken.expireDate else {
             return false
         }
         return Date().addingTimeInterval(configuration.tokenRefreshTimeInterval) >= expirationDate
     }
-}
-
-// MARK: - Refresh Token
-extension NetworkRequestAuthorizer {
-    private func refreshTokenIfAvailable() -> AnyPublisher<Tokenable, OAuthError> {
+    
+    func authorizeAccessToken() -> AnyPublisher<Tokenable, OAuthError> {
+        guard let accessToken = tokenStore.getAccessToken(),
+              !shouldRefreshToken(accessToken)
+        else {
+            return refreshTokenIfAvailable()
+        }
+        return CurrentValueSubject<Tokenable, OAuthError>(accessToken).eraseToAnyPublisher()
+    }
+    
+    func refreshTokenIfAvailable() -> AnyPublisher<Tokenable, OAuthError> {
         if let refreshToken = tokenStore.getRefreshToken(), refreshToken.isValid {
             return refreshAccessToken(with: refreshToken.value)
                 .storeAccessToken(tokenStore)
@@ -65,7 +74,7 @@ extension NetworkRequestAuthorizer {
         }
     }
     
-    private func refreshAccessToken(with refreshToken: String) -> AnyPublisher<Tokenable, Error> {
+    func refreshAccessToken(with refreshToken: String) -> AnyPublisher<Tokenable, Error> {
         if let refresher = tokenRefresher {
             return refresher.refreshAccessToken(using: refreshToken)
         } else if let closure = tokenRefreshBlock {
@@ -76,17 +85,7 @@ extension NetworkRequestAuthorizer {
     }
 }
 
-// MARK: - Authorize
-extension NetworkRequestAuthorizer {
-    public func authorize() -> AnyPublisher<Tokenable, OAuthError> {
-        guard let accessToken = tokenStore.getAccessToken(),
-              !shouldRefreshToken(accessToken)
-        else {
-            return refreshTokenIfAvailable()
-        }
-        return CurrentValueSubject<Tokenable, OAuthError>(accessToken).eraseToAnyPublisher()
-    }
-}
+// MARK: - Authorizing
 
 extension NetworkRequestAuthorizer: Authorizing {
     public var isSignedIn: Bool {
@@ -96,9 +95,14 @@ extension NetworkRequestAuthorizer: Authorizing {
         return refreshToken.isValid
     }
     
-    public func authorize() -> AnyPublisher<HTTPHeaders, Error> {
-        authorize()
+    public func authorize(_ request: URLRequest) -> AnyPublisher<URLRequest, Error> {
+        authorizeAccessToken()
             .map { ["Authorization": "Bearer " + $0.value] }
+            .map { headers in
+                var newRequest = request
+                headers.forEach { newRequest.setValue($0.value, forHTTPHeaderField: $0.key) }
+                return newRequest
+            }
             .mapError { $0 as Error }
             .eraseToAnyPublisher()
     }
