@@ -4,7 +4,7 @@
 
 ## Architecture
 
-<img width="1299" alt="Screenshot 2021-07-16 at 15 28 19" src="https://user-images.githubusercontent.com/79094816/125940838-f9dc6473-3d0f-4995-88d3-8b0ad0c209a1.png">
+![Screenshot 2021-10-18 at 21 07 47](https://user-images.githubusercontent.com/79094816/137776551-5fa68aeb-7c11-414e-ad0f-b70e3183d3dd.png)
 
 
 ### General flow of API call
@@ -27,12 +27,12 @@ let manager = NetworkManager(session: session, authorizer: authorizer, decoder: 
 
 ### Authorizing
 
-`Authorizing` is an abstraction for authorizer containing `isSignedIn` property alongside `authorize()` method.
+`Authorizing` is an abstraction for authorizer containing `isSignedIn` property alongside `authorize(_ request: URLRequest)` method.
 
 ```Swift
 public protocol Authorizing: AnyObject {
     var isSignedIn: Bool { get }
-    func authorize() -> AnyPublisher<HTTPHeaders, Error>
+    func authorize(_ request: URLRequest) -> AnyPublisher<URLRequest, Error>
 }
 ```
 
