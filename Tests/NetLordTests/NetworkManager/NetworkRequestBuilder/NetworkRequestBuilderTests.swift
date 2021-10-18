@@ -135,7 +135,7 @@ extension NetworkManagerTests {
         XCTAssertEqual(manager.builtRequest?.timeoutInterval, interval)
     }
 
-    func testNetworkRequestSuccess() throws {
+    func testNetworkRequest_Success() throws {
         let promise = expectation(description: "Getting mock object")
         let object = Dummy.stubbed
         let data = try JSONEncoder().encode(object)
@@ -162,7 +162,7 @@ extension NetworkManagerTests {
         wait(for: [promise], timeout: 1)
     }
 
-    func testNetworkRequestFailure() {
+    func testNetworkRequest_Failure() {
         let promise = expectation(description: "Getting failure")
         let session = MockSession(data: nil, response: nil, error: nil)
         let manager = NetworkManager(session: session)

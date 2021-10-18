@@ -18,7 +18,7 @@ final class NetworkManagerTests: XCTestCase {
         cancellables = []
     }
     
-    func testDataTaskSuccess() throws {
+    func testDataTask_Success() throws {
         let object = Dummy.stubbed
         let data = try JSONEncoder().encode(object)
         let url = try XCTUnwrap(URL(string: "https://example.com"))
@@ -44,7 +44,7 @@ final class NetworkManagerTests: XCTestCase {
         wait(for: [promise], timeout: 1)
     }
     
-    func testDataTaskFailure() throws {
+    func testDataTask_Failure() throws {
         let url = try XCTUnwrap(URL(string: "https://example.com"))
         let session = MockSession(data: nil, response: nil, error: URLError(.unknown))
         let manager = NetworkManager(session: session)
@@ -66,7 +66,7 @@ final class NetworkManagerTests: XCTestCase {
         wait(for: [promise], timeout: 1)
     }
     
-    func testDownloadTaskSuccess() throws {
+    func testDownloadTask_Success() throws {
         let responseUrl = try XCTUnwrap(URL(string: "my/path"))
         let requestUrl = try XCTUnwrap(URL(string: "https://example.com"))
         let session = MockSession(url: responseUrl, response: nil, error: nil)
@@ -90,7 +90,7 @@ final class NetworkManagerTests: XCTestCase {
         wait(for: [promise], timeout: 1)
     }
     
-    func testDownloadTaskFailure() throws {
+    func testDownloadTask_Failure() throws {
         let requestUrl = try XCTUnwrap(URL(string: "https://example.com"))
         let session = MockSession(url: nil, response: nil, error: nil)
         let manager = NetworkManager(session: session)
