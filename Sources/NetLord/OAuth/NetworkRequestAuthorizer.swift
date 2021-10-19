@@ -8,45 +8,45 @@
 import Foundation
 import Combine
 
+public typealias AccessToken = String
+public typealias RefreshToken = String
+
 public protocol TokenRefreshing {
-    func refreshAccessToken(using refreshToken: String) -> AnyPublisher<Tokenable, Error>
+    func refreshAccessToken(using refreshToken: RefreshToken) -> AnyPublisher<Tokenable, Error>
 }
 
 public final class NetworkRequestAuthorizer {
-    public typealias TokenRefreshHandler = (String) -> AnyPublisher<Tokenable, Error>
+    public typealias TokenRefreshHandler = (RefreshToken) -> AnyPublisher<Tokenable, Error>
     
     internal let tokenStore: TokenStoring
     internal let configuration: Configuration
-    internal let tokenRefreshBlock: TokenRefreshHandler?
-    internal let tokenRefresher: TokenRefreshing?
+    internal let tokenRefreshBlock: TokenRefreshHandler
     
     public init(
         tokenStore: TokenStoring,
         configuration: Configuration = .default,
-        onTokenRefreshRequest refreshBlock: TokenRefreshHandler?
+        onTokenRefreshRequest refreshBlock: @escaping TokenRefreshHandler
     ) {
         self.tokenStore = tokenStore
         self.configuration = configuration
         tokenRefreshBlock = refreshBlock
-        tokenRefresher = nil
     }
     
     public init(
         tokenStore: TokenStoring,
         configuration: Configuration = .default,
-        tokenRefresher: TokenRefreshing?
+        tokenRefresher: TokenRefreshing
     ) {
         self.tokenStore = tokenStore
         self.configuration = configuration
-        self.tokenRefresher = tokenRefresher
-        tokenRefreshBlock = nil
+        tokenRefreshBlock = tokenRefresher.refreshAccessToken
     }
 }
 
 // MARK: - Refresh Token
 // TODO: - Add tests for NetworkRequestAuthorizer
 
-private extension NetworkRequestAuthorizer {
+extension NetworkRequestAuthorizer {
     func shouldRefreshToken(_ accessToken: Tokenable) -> Bool {
         guard let expirationDate = accessToken.expireDate else {
             return false
@@ -58,29 +58,19 @@ private extension NetworkRequestAuthorizer {
         guard let accessToken = tokenStore.getAccessToken(),
               !shouldRefreshToken(accessToken)
         else {
-            return refreshTokenIfAvailable()
+            return refreshToken()
         }
         return CurrentValueSubject<Tokenable, OAuthError>(accessToken).eraseToAnyPublisher()
     }
     
-    func refreshTokenIfAvailable() -> AnyPublisher<Tokenable, OAuthError> {
+    func refreshToken() -> AnyPublisher<Tokenable, OAuthError> {
         if let refreshToken = tokenStore.getRefreshToken(), refreshToken.isValid {
-            return refreshAccessToken(with: refreshToken.value)
+            return tokenRefreshBlock(refreshToken.value)
                 .storeAccessToken(tokenStore)
                 .mapError { OAuthError.tokenRefreshFailed($0) }
                 .eraseToAnyPublisher()
         } else {
             return Fail(error: OAuthError.refreshTokenNotFound).eraseToAnyPublisher()
-        }
-    }
-    
-    func refreshAccessToken(with refreshToken: String) -> AnyPublisher<Tokenable, Error> {
-        if let refresher = tokenRefresher {
-            return refresher.refreshAccessToken(using: refreshToken)
-        } else if let closure = tokenRefreshBlock {
-            return closure(refreshToken)
-        } else {
-            return Fail(error: OAuthError.tokenRefresherNotFound).eraseToAnyPublisher()
         }
     }
 }
